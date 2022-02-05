@@ -1,59 +1,33 @@
 const fs = require("fs");
 const path = require("path");
-
+const { PrismaClient } = require("@prisma/client");
 const { ApolloServer } = require("apollo-server");
 // import ApolloServer
+const { getUserId } = require("./utils");
+const Query = require("./resolvers/Query");
+const Mutation = require("./resolvers/Mutation");
+const User = require("./resolvers/User");
+const Link = require("./resolvers/Link");
 
-let links = [
-  {
-    id: "link0",
-    url: "howtographql",
-    description: "fullstack tutorial",
-  },
-];
-
-// typedefs are the definition of your graphql schema.
-// contains the parent or root field
+const prisma = new PrismaClient();
 
 const resolvers = {
-  Query: {
-    info: () => `this is a api`,
-    feed: () => links,
-    findLink: (_, { id }) =>
-      links.find((link) => {
-        const foundLink = link.id === id;
-        return foundLink;
-      }),
-  },
-  Mutation: {
-    post: (parent, args) => {
-      let idCount = links.length;
-      const link = {
-        id: `link-${idCount++}`,
-        description: args.description,
-        url: args.url,
-      };
-      links.push(link);
-      return link;
-    },
-    updateLink: (parent, { id, description }) => {
-      let updated = links.find((link) => {
-        console.log(id, description);
-        if (link.id === id) {
-          description: description;
-        }
-        return updated;
-      });
-    },
-  },
+  Query,
+  Mutation,
+  User,
+  Link,
 };
-// resolvers object is the implementation of the graphql schema will be indentical to the type definitions
 
 const server = new ApolloServer({
   typeDefs: fs.readFileSync(path.join(__dirname, "schema.graphql"), "utf8"),
   resolvers,
-  introspection: true,
-  playground: true,
+  context: ({ req }) => {
+    return {
+      ...req,
+      prisma,
+      userId: req && req.headers.authorization ? getUserId(req) : null,
+    };
+  },
 });
 
 // simple implementation of the server, tells the server what operations should be accepted and how they should be resolved
