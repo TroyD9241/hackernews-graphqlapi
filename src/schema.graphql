@@ -1,6 +1,6 @@
 type Query {
   info: String!
-  feed: [Link!]!
+  feed(filter: String, skip: Int, take: Int, orderBy: LinkOrderByInput): Feed!
   findLink(id: ID!): Link
   allUsers: [User!]!
 }
@@ -13,6 +13,11 @@ type Mutation {
   login(email: String!, password: String!): AuthPayload
   deleteUser(id: ID!): User
   vote(linkId: ID!): Vote
+}
+
+type Feed {
+  links: [Link!]!
+  count: Int!
 }
 
 type Subscription {
@@ -44,4 +49,15 @@ type Vote {
   id: ID!
   link: Link!
   user: User!
+}
+
+input LinkOrderByInput {
+  description: Sort
+  url: Sort
+  createdAt: Sort
+}
+
+enum Sort {
+  asc
+  desc
 }
