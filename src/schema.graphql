@@ -13,19 +13,18 @@ type Mutation {
   login(email: String!, password: String!): AuthPayload
   deleteUser(id: ID!): User
 }
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  links: [Link!]!
+}
 
 type Link {
   id: ID!
   description: String!
   url: String!
   postedBy: User
-}
-
-type User {
-  id: ID!
-  name: String!
-  email: String!
-  links: [Link!]!
 }
 
 type AuthPayload {

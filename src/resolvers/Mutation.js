@@ -9,11 +9,12 @@ async function post(parent, args, context, info) {
     data: {
       url: args.url,
       description: args.description,
-      postedBy: { connect: { id: userId } },
+      postedBy: {
+        connect: { id: userId },
+      },
     },
   });
 }
-
 async function signup(parent, args, context, info) {
   const password = await bcrypt.hash(args.password, 10);
 
